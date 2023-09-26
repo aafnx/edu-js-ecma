@@ -1,76 +1,59 @@
 'use strict'
 
-// 1) Дан массив const arr = [1, 5, 7, 9] с помощью Math.min и spread оператора,
-// найти минимальное число в массиве, решение задание должно состоять из одной строки
+// Задание 1: ""Управление библиотекой книг""
+// Реализуйте класс `Book`, представляющий книгу, со следующими свойствами и методами:
+//     Свойство `title` (название) - строка, название книги.
+//     Свойство `author` (автор) - строка, имя автора книги.
+//     Свойство `pages` (количество страниц) - число, количество страниц в книге.
+//     Метод `displayInfo()` - выводит информацию о книге (название, автор и количество страниц).
 
-const arr = [1,5,7,9];
-console.log(Math.min(...arr));
-
-
-// 2) Напишите функцию createCounter, которая создает счетчик и возвращает объект
-// с двумя методами: increment и decrement.
-// Метод increment должен увеличивать значение счетчика на 1, а
-// метод decrement должен уменьшать значение счетчика на 1.
-// Значение счетчика должно быть доступно только через методы объекта, а не напрямую.
-
-const createCounter = () => {
-    let value = 0;
-    return {
-        increment: () => ++value,
-        decrement: () => --value,
-        getValue: () => value
+class Book {
+    constructor(title, author, pages) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
     }
+    displayInfo = () => console.log(`Название книги: ${this.title}\nАвтор: ${this.author}\nКоличество страниц: ${this.pages}`)
 }
 
-const counter = createCounter();
-counter.increment();
-counter.increment();
-counter.increment();
-counter.decrement();
-console.log(counter.getValue()); // 2
+const IdiotBook = new Book('Идиот', 'Достоевский', 342);
+const JSForDummiesBook = new Book('JavaScript для чайников', 'Emily A., Vander Veer', 1674);
+
+IdiotBook.displayInfo();
+setTimeout(JSForDummiesBook.displayInfo, 2000);
 
 
-// 3) Напишите рекурсивную функцию findElementByClass,
-// которая принимает корневой элемент дерева DOM и название класса в качестве аргументов
-// и возвращает первый найденный элемент с указанным классом в этом дереве.
+// Задание 2: ""Управление списком студентов""
+// Реализуйте класс `Student`, представляющий студента, со следующими свойствами и методами:
+//     Свойство `name` (имя) - строка, имя студента.
+//     Свойство `age` (возраст) - число, возраст студента.
+//     Свойство `grade` (класс) - строка, класс, в котором учится студент.
+//     Метод `displayInfo`() - выводит информацию о студенте (имя, возраст и класс).
 
-//     Пример
-// const rootElement = document.getElementById('root');
-// const targetElement = findElementByClass(rootElement, 'my-class');
-// console.log(targetElement);
+// Пример использования класса
+// const student1 = new Student(""John Smith"", 16, ""10th grade"");
+// student1.displayInfo();
+        // Вывод:
+        // Name: John Smith
+        // Age: 16
+        // Grade: 10th grade
+// const student2 = new Student(""Jane Doe"", 17, ""11th grade"");
+// student2.displayInfo();
+        // Вывод:
+        // Name: Jane Doe
+        // Age: 17
+        // Grade: 11th grade"
 
-const findElementByClass = (rootEl, targetClassName) => {
-    const closureFoo = _checkDom();
-    return closureFoo.find(rootEl, targetClassName);
-}
-
-function _checkDom() {
-    return {
-        lookingElement: null,
-        find: function(rootEL, targetClassName) {
-            if (rootEL.classList.contains(targetClassName)) {
-                this.lookingElement = rootEL;
-                return rootEL;
-            }
-            const children = rootEL.children;
-            for (let i = 0; i < children.length; i++) {
-                if (this.lookingElement) {
-                    return this.lookingElement;
-                }
-                this.find(children[i], targetClassName);
-            }
-            return this.lookingElement;
-        }
+class Student {
+    constructor(name, age, grade) {
+        this.name = name;
+        this.age = age;
+        this.grade = grade;
     }
+    displayInfo = () => console.log(`Name: ${this.name}\nAge: ${this.age}\nGrade: ${this.grade}`);
 }
 
-window.addEventListener('load', () => {
-    const rootEl = document.querySelector('.container');
-    const box3El = document.querySelector('.box:nth-child(3)');
-
-    const targetEl = findElementByClass(rootEl, 'span-target')
-    const target2El = findElementByClass(box3El, 'img');
-
-    console.log(targetEl)
-    console.log(target2El)
-})
+const student1 = new Student('John Smith', 16, '10th grade');
+const student2 = new Student('Jane Doe', 17, '11th grade');
+student1.displayInfo();
+student2.displayInfo();
