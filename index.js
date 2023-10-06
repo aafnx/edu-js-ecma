@@ -1,121 +1,109 @@
-'use strict'
+// ## 1. ""Получение данных о пользователе""
 
-// Задание 1. "Управление персоналом компании"
-// Реализуйте класс Employee (сотрудник), который имеет следующие свойства и методы:
-//     Свойство name (имя) - строка, имя сотрудника.
-//     Метод displayInfo() - выводит информацию о сотруднике (имя).
+// Реализуйте функцию `getUserData`, которая принимает идентификатор пользователя (`ID`) в качестве аргумента и
+// использует `fetch` для получения данных о пользователе с заданным `ID` с удаленного сервера.
+// Функция должна возвращать промис, который разрешается с данными о пользователе в виде объекта.
+// Если пользователь с указанным `ID` не найден, промис должен быть отклонен с соответствующим сообщением об ошибке.
 
-// Реализуйте класс Manager (менеджер), который наследует класс Employee и имеет дополнительное свойство и метод:
-//     Свойство department (отдел) - строка, отдел, в котором работает менеджер.
-//     Метод displayInfo() - переопределяет метод displayInfo() родительского класса и выводит информацию о менеджере (имя и отдел).
+// Подсказка, с последовательностью действий:
+// `getUserData` использует `fetch` для получения данных о пользователе с удаленного сервера.
+// Если запрос успешен (с кодом `200`), функция извлекает данные из ответа с помощью `response.json()` и
+// возвращает объект с данными о пользователе. Если запрос неуспешен, функция отклоняет промис с сообщением об ошибке.
 
-// // Пример использования классов
-// const employee = new Employee("John Smith");
-// employee.displayInfo();
-// // Вывод:
-// // Name: John Smith
-//
-// const manager = new Manager("Jane Doe", "Sales");
-// manager.displayInfo();
-// // Вывод:
-// // Name: Jane Doe
-// // Department: Sales
+const URL = 'https://jsonplaceholder.typicode.com'
 
-class  Employee {
-    constructor(name) {
-        this.name = name;
-    }
-    displayInfo() {
-        console.log(`Имя: ${this.name}`);
+function getUserData(id) {
+    return new Promise((resolve, reject) => {
+        fetch(`${URL}/users`)
+            .then(response => {
+                if (response.ok) {
+                    response.json()
+                        .then(users => {
+                            const targetUser = users.find(user => user.id === id);
+                            targetUser ? resolve(targetUser) : reject('Пользователь не найден');
+                        });
+                } else {
+                    reject('Ошибка ответа сервера')
+                }
+            })
+    })
+}
+
+getUserData(5)
+    .then(data => console.log(data))
+    .catch(e => console.error(e))
+
+
+// ## 2. ""Отправка данных на сервер""
+// Реализуйте функцию `saveUserData`, которая принимает объект с данными о пользователе в качестве аргумента и
+// использует `fetch` для отправки этих данных на удаленный сервер для сохранения.
+// Функция должна возвращать промис, который разрешается, если данные успешно отправлены,
+// или отклоняется в случае ошибки.
+
+// `saveUserData` использует `fetch` для отправки данных о пользователе на удаленный сервер для сохранения.
+// Она отправляет POST-запрос на URL-адрес `/users` с указанием типа содержимого `application/json` и сериализует
+// объект с данными о пользователе в JSON-строку с помощью `JSON.stringify()`. Если запрос успешен (с кодом `200`),
+// функция разрешает промис. Если запрос неуспешен, функция отклоняет промис с сообщени
+
+function  saveUserData(user) {
+    return new Promise((resolve, reject) => {
+        fetch(`${URL}/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(response => {
+                if (response.ok) {
+                    resolve();
+                } else {
+                    reject('Ошибка сохранения данных о пользователе');
+                }
+            })
+    })
+}
+
+const user  = {
+    name: 'Dima',
+    age: 35,
+    address: {
+        country: 'Russia',
+        city: 'Moscow',
+        street: 'Pushkina',
+        house: 1
     }
 }
 
-class Manager extends Employee {
-    constructor(name, department) {
-        super(name);
-        this.department = department;
+saveUserData(user)
+    .then(response => console.log('Данные успешно записаны'))
+    .catch(err => console.error(err))
+
+
+//## 3. ""Изменение стиля элемента через заданное время""
+// Напишите функцию `changeStyleDelayed`, которая принимает идентификатор элемента и время задержки (в миллисекундах)
+// в качестве аргументов. Функция должна изменить стиль элемента через указанное время.
+
+function  changeStyleDelayed(elementId, ms, isInterval = false) {
+    const el = document.querySelector(`#${elementId}`);
+    if (!el) {
+        throw new Error('Елемент не найден');
     }
-    displayInfo() {
-        // можно было просто переопредлить метод написав console.log(`Имя: ${this.name}`\nОтдел: ${this.department}`);
-        // но я использовал сперва вызов метода displayInfo(), через ключевое слово super
-        // затем добавил вывод отдела
-        super.displayInfo();
-        console.log(`Отдел: ${this.department}`)
-    }
-}
 
-const employee = new Employee('Джон Смит');
-employee.displayInfo();
-console.log(`-----`)
-const manager = new Manager('Джейн До', 'Продажи');
-manager.displayInfo();
-
-// Задание 2. "Управление списком заказов"
-// Реализуйте класс Order (заказ), который имеет следующие свойства и методы:
-//     Свойство orderNumber (номер заказа) - число, уникальный номер заказа.
-//     Свойство products (продукты) - массив, содержащий список продуктов в заказе.
-//     Метод addProduct(product) - принимает объект product и добавляет его в список продуктов заказа.
-//     Метод getTotalPrice() - возвращает общую стоимость заказа, основанную на ценах продуктов.
-
-// Пример использования класса
-//     class Product {
-//     constructor(name, price) {
-//         this.name = name;
-//         this.price = price;
-//     }
-// }
-//
-// const order = new Order(12345);
-//
-// const product1 = new Product("Phone", 500);
-// order.addProduct(product1);
-//
-// const product2 = new Product("Headphones", 100);
-// order.addProduct(product2);
-//
-// console.log(order.getTotalPrice()); // Вывод: 600
-
-class Product {
-    constructor(name, price) {
-        this.name = name;
-        this.price = price;
+    if (!isInterval) {
+        setTimeout(() => {
+            el.style.backgroundColor = 'red'
+        }, ms)
+    } else {
+        const srcStyle = el.style.backgroundColor;
+        setInterval(() => {
+            if (srcStyle === el.style.backgroundColor) {
+                el.style.backgroundColor = 'red';
+            } else {
+                el.style.backgroundColor = srcStyle;
+            }
+        }, ms)
     }
 }
 
-class Order {
-    constructor(orderNumber) {
-        this.orderNumber = orderNumber;
-        this.products = [];
-    }
-    addProduct(product, count = 1) {
-        if (this.products.includes(product)) {
-            this.products.find(el => el.name === product.name).count += count;
-        } else {
-            product.count = count;
-            this.products.push(product);
-        }
-    }
-    getTotalPrice() {
-        return this.products.reduce((acc, {price, count}) => acc + price * count, 0);
-    }
-    getProductsInOrder() {
-        return this.products;
-    }
-}
-
-const phone = new Product('phone', 50000);
-const headphones = new Product('headphones', 9800);
-const watch = new Product('watch', 32000);
-
-const order1 = new Order(1);
-order1.addProduct(phone, 2)
-order1.addProduct(headphones)
-console.log(order1.getProductsInOrder())
-console.log(order1.getTotalPrice())
-
-const order2 = new Order(2);
-order2.addProduct(watch, 5);
-order2.addProduct(phone);
-order2.addProduct(headphones, 3);
-console.log(order2.getProductsInOrder())
-console.log(order2.getTotalPrice());
+changeStyleDelayed('target', 1000, true);
